@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from collections.abc import Iterable
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 import io
@@ -21,7 +22,10 @@ class DetailedValidationResult[Target](ValidationResult):
 class Validator[Target](ABC):
     @abstractmethod
     def validate(self, target: Target) -> ValidationResult: ...
-    
+
+    @abstractmethod
+    def targets_in_scope(self) -> Iterable[Target]: ...
+
     def time_limit(self) -> timedelta | None:
         return timedelta(seconds=10)   
 

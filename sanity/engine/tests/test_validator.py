@@ -1,3 +1,4 @@
+from collections.abc import Iterable
 from datetime import timedelta
 
 import pytest
@@ -18,15 +19,24 @@ class PassingValidator(Validator[str]):
     def validate(self, target: str) -> ValidationResult:
         return ok(f"validated {target}")
 
+    def targets_in_scope(self) -> Iterable[str]:
+        return []
+
 
 class FailingValidator(Validator[str]):
     def validate(self, target: str) -> ValidationResult:
         return failed(f"invalid: {target}")
 
+    def targets_in_scope(self) -> Iterable[str]:
+        return []
+
 
 class ExplodingValidator(Validator[str]):
     def validate(self, target: str) -> ValidationResult:
         raise ValueError("boom")
+
+    def targets_in_scope(self) -> Iterable[str]:
+        return []
 
 
 class TestValidator:
@@ -84,6 +94,9 @@ class SlowValidator(Validator[str]):
         while True:
             pass
 
+    def targets_in_scope(self) -> Iterable[str]:
+        return []
+
     def time_limit(self) -> timedelta | None:
         return timedelta(milliseconds=50)
 
@@ -92,6 +105,9 @@ class CustomTimeLimitValidator(Validator[str]):
     def validate(self, target: str) -> ValidationResult:
         return ok("done")
 
+    def targets_in_scope(self) -> Iterable[str]:
+        return []
+
     def time_limit(self) -> timedelta | None:
         return timedelta(seconds=30)
 
@@ -99,6 +115,9 @@ class CustomTimeLimitValidator(Validator[str]):
 class NoTimeLimitValidator(Validator[str]):
     def validate(self, target: str) -> ValidationResult:
         return ok("done")
+
+    def targets_in_scope(self) -> Iterable[str]:
+        return []
 
     def time_limit(self) -> timedelta | None:
         return None

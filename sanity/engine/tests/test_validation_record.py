@@ -1,4 +1,4 @@
-from collections.abc import Collection
+from collections.abc import Collection, Iterable
 from datetime import datetime, timedelta, UTC
 
 import pytest
@@ -72,6 +72,9 @@ class _TestTarget(ValidationTarget):
 class _TestValidator(Validator[_TestTarget]):
     def validate(self, target: _TestTarget) -> ValidationResult:
         return ok(f"validated {target.value}")
+
+    def targets_in_scope(self) -> Iterable[_TestTarget]:
+        return []
 
 
 class TestFromDetailedValidationResult:

@@ -23,11 +23,13 @@ from .engine import (
     ok,
     skipped,
 )
+from .runner import Runner
 
 __all__ = [
     "DetailedValidationResult",
     "ENFORCE_TIME_LIMIT",
     "NoEnforcementBehavior",
+    "Runner",
     "StopWatch",
     "StopWatchError",
     "StopWatchReadings",
