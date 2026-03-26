@@ -1,0 +1,20 @@
+[project]
+name = "sanity"
+version = "0.1.0"
+description = "Data coherence validation framework"
+authors = [
+    {name = "Oleg Mingalev", email = "oleg@mingalev.net"}
+]
+requires-python = ">=3.14"
+dependencies = []
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+packages = [{include = "sanity"}]
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.0"
+pytest-cov = "^6.0"
