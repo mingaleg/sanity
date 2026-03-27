@@ -23,9 +23,10 @@ from .engine import (
     ok,
     skipped,
 )
-from .runner import Runner
+from .runner import DBRunner, Runner
 
 __all__ = [
+    "DBRunner",
     "DetailedValidationResult",
     "ENFORCE_TIME_LIMIT",
     "NoEnforcementBehavior",

@@ -525,3 +525,59 @@ class TestTimeLimitRecursion:
         with pytest.raises(TimeLimitExceeded):
             with TimeLimit(timedelta(milliseconds=50)):
                 func_a(0)
+
+
+class TestTimeLimitStress:
+    def test_many_sequential_time_limits(self):
+        for _ in range(1000):
+            with TimeLimit(timedelta(seconds=1)):
+                pass
+
+    @requires_enforcement
+    def test_many_sequential_time_limits_with_work(self):
+        for _ in range(100):
+            with TimeLimit(timedelta(seconds=1)):
+                _ = sum(range(1000))
+
+    @requires_enforcement
+    def test_many_concurrent_time_limits_in_threads(self):
+        results = {"completed": 0, "exceeded": 0}
+        lock = threading.Lock()
+
+        def worker(should_exceed: bool):
+            try:
+                with TimeLimit(timedelta(milliseconds=100)):
+                    if should_exceed:
+                        while True:
+                            pass
+                    # fast path: no work, just exit
+                with lock:
+                    results["completed"] += 1
+            except TimeLimitExceeded:
+                with lock:
+                    results["exceeded"] += 1
+
+        threads = []
+        for i in range(50):
+            t = threading.Thread(target=worker, args=(i % 2 == 0,))
+            threads.append(t)
+            t.start()
+
+        for t in threads:
+            t.join(timeout=5)
+
+        assert results["completed"] == 25
+        assert results["exceeded"] == 25
+
+    @requires_enforcement
+    def test_rapid_fire_time_limits(self):
+        exceeded_count = 0
+        for _ in range(50):
+            try:
+                with TimeLimit(timedelta(milliseconds=10)):
+                    while True:
+                        pass
+            except TimeLimitExceeded:
+                exceeded_count += 1
+
+        assert exceeded_count == 50
